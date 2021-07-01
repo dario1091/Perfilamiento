@@ -1,0 +1,25 @@
+{
+  "name": "autoaprobacion",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "aws-sdk": "^2.859.0",
+    "dotenv": "^10.0.0",
+    "jsonwebtoken": "^8.5.1",
+    "mysql2": "^2.2.5",
+    "node-cron": "^3.0.0",
+    "pdf-poppler": "^0.2.1",
+    "request": "^2.88.2",
+    "sequelize": "^6.3.5",
+    "tesseract.js": "^2.1.4",
+    "textract": "^2.5.0"
+  }
+}
