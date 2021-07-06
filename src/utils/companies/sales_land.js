@@ -200,8 +200,8 @@ const readPaymentgSupportSalesLand = (filePath) => new Promise((resolve, reject)
     if (ext === 'pdf') {
       console.log("Entremos a convertir pdf en imagen");
       console.log(filePath);
-      convertImage(filePath);
-      filePath = path.dirname(filePath) + "/" + path.basename(filePath).replace(path.extname(filePath), '.jpeg');
+      // convertImage(filePath);
+      // filePath = path.dirname(filePath) + "/" + path.basename(filePath).replace(path.extname(filePath), '.jpeg');
     }
 
     let arrayTextLine = [];

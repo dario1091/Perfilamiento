@@ -2,6 +2,8 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 var path = require('path');
 // const pdf = require('pdf-poppler');
+var PDFImage = require("pdf-image").PDFImage;
+
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -60,22 +62,30 @@ async function convertImage(pdfPath, pass = '') {
 
   console.log("Salida al convertir:");
   console.log(path.dirname(pdfPath));
-  let option = {
-    format: 'jpeg',
-    out_dir: path.dirname(pdfPath) + "/",
-    out_prefix: path.basename(pdfPath, path.extname(pdfPath)),
-    password: "1031121750",
-    page: 1
-  }
+  var pdfImage = new PDFImage(pdfPath);
+  pdfImage.convertPage(0).then(function (imagePath) {
+    // 0-th page (first page) of the slide.pdf is available as slide-0.png
+    fs.existsSync(path.dirname(pdfPath) + "/" + "image.png") // => true
+  });
+
+  // let option = {
+  //   format: 'jpeg',
+  //   out_dir: path.dirname(pdfPath) + "/",
+  //   out_prefix: path.basename(pdfPath, path.extname(pdfPath)),
+  //   password: "1031121750",
+  //   page: 1
+  // }
   // option.out_dir value is the path where the image will be saved
 
-  pdf.convert(pdfPath, option)
-    .then(() => {
-      console.log('file converted')
-    })
-    .catch(err => {
-      console.log('an error has occurred in the pdf converter ' + err)
-    })
+  // pdf.convert(pdfPath, option)
+  //   .then(() => {
+  //     console.log('file converted')
+  //   })
+  //   .catch(err => {
+  //     console.log('an error has occurred in the pdf converter ' + err)
+  //   })
+
+
 
 }
 
