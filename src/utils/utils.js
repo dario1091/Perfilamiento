@@ -66,6 +66,11 @@ async function convertImage(pdfPath, pass = '') {
   pdfImage.convertPage(0).then(function (imagePath) {
     // 0-th page (first page) of the slide.pdf is available as slide-0.png
     fs.existsSync(path.dirname(pdfPath) + "/" + "image.png") // => true
+    console.log('file converted')
+    console.log("-------------------------------------");
+    console.log(imagePath);
+    console.log("-------------------------------------");
+
   });
 
   // let option = {
