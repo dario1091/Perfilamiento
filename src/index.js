@@ -260,7 +260,7 @@ async function worker(newClient) {
           dataDocument.paymentData_paymentDate = '';
 
           if (newClient.Company_idCompany == 1) {
-            0
+            
             await readPaymentgSupport(`C:/projects/Avanzo/files/documents/${newClient.file3}`).then(response => {
               console.log("Respuesta en index OK");
               if (response) {
