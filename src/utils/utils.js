@@ -3,7 +3,7 @@ const AWS = require('aws-sdk');
 var path = require('path');
 // const pdf = require('pdf-poppler');
 var PDFImage = require("pdf-image").PDFImage;
-
+var pdf2img = require('pdf2img');
 const dotenv = require("dotenv");
 dotenv.config();
 
@@ -60,35 +60,70 @@ async function documentExtract(imagePath) {
 
 async function convertImage(pdfPath, pass = '') {
 
-  console.log("Salida al convertir:");
-  console.log(path.dirname(pdfPath));
-  var pdfImage = new PDFImage(pdfPath);
-  pdfImage.convertPage(0).then(function (imagePath) {
-    // 0-th page (first page) of the slide.pdf is available as slide-0.png
-    fs.existsSync(path.dirname(pdfPath) + "/" + "image.png") // => true
-    console.log('file converted')
-    console.log("-------------------------------------");
-    console.log(imagePath);
-    console.log("-------------------------------------");
+  try {
+    // pdf2img.setOptions({
+    //   type: 'png',                                // png or jpg, default jpg
+    //   size: 1024,                                 // default 1024
+    //   density: 600,                               // default 600
+    //   outputdir: path.dirname(pdfPath) + path.sep,  // output folder, default null (if null given, then it will create folder name same as file name)
+    //   outputname: 'test',                         // output file name, dafault null (if null given, then it will create image name same as input name)
+    //   page: null,                                 // convert selected page, default null (if null given, then it will convert all pages)
+    //   quality: 100                                // jpg compression quality, default: 100
+    // });
+    // console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>");
+    // pdf2img.convert(pdfPath, function (err, info) {
+    //   console.log("22--------------------------------------------");
 
-  });
+    //   if (err) console.log(err)
+    //   else console.log(info);
+    // });
+    console.log(pdfPath);
 
-  // let option = {
-  //   format: 'jpeg',
-  //   out_dir: path.dirname(pdfPath) + "/",
-  //   out_prefix: path.basename(pdfPath, path.extname(pdfPath)),
-  //   password: "1031121750",
-  //   page: 1
-  // }
-  // option.out_dir value is the path where the image will be saved
+    var pdfImage = new PDFImage("../../workingSupport.pdf");
+    console.log("--------------------------------------------");
+    console.log("--------------------------------------------");
+    pdfImage.convertFile().then(function (imagePaths) {
+      // [ /tmp/slide-0.png, /tmp/slide-1.png ]
+      console.log("---::::::::::::::::::::::::::::");
+      console.log(imagePaths);
+    });
 
-  // pdf.convert(pdfPath, option)
-  //   .then(() => {
-  //     console.log('file converted')
-  //   })
-  //   .catch(err => {
-  //     console.log('an error has occurred in the pdf converter ' + err)
-  //   })
+
+    var pdfImage2 = new PDFImage("../../workingSupport.pdf");
+
+    pdfImage2.convertFile().then(function (imagePaths) {
+      // [ /tmp/slide-0.png, /tmp/slide-1.png ]
+      console.log(">>3");
+    });
+
+
+
+    var pdfImage3 = new PDFImage("../../workingSupport.pdf", {
+      combinedImage: true
+    });
+
+    pdfImage3.convertFile().then(function (imagePaths) {
+      // /tmp/slide.png 
+      console.log(">>2");
+    });
+
+
+
+
+
+
+
+
+
+
+
+  } catch (error) {
+    console.log(":::::::::::::::::::::::::::::::::::::::::11");
+
+    console.log(error);
+    console.log(":::::::::::::::::::::::::::::::::::::::::");
+  }
+
 
 
 
@@ -171,6 +206,7 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
 
         try {
           (async () => {
+
             let jsonToRead = await documentExtract(file);
 
             let arrayTextLine = [];

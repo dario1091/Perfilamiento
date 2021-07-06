@@ -56,7 +56,7 @@ async function worker(newClient) {
         /**
          * Validar cedula
          */
-        if (newClient.file1) {
+        if (!newClient.file1) {
 
 
 

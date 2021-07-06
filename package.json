@@ -17,6 +17,8 @@
     "mysql2": "^2.2.5",
     "node-cron": "^3.0.0",
     "pdf-image": "^2.0.0",
+    "pdf2img": "^0.5.0",
+    "pdf2img-lambda-friendly": "^2.0.0",
     "request": "^2.88.2",
     "sequelize": "^6.3.5",
     "tesseract.js": "^2.1.4",
