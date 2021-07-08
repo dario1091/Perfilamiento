@@ -293,6 +293,13 @@ module.exports = function (sequelize, DataTypes) {
       autoIncrement: false,
       primaryKey: false,
       defaultValue: null
+    },
+    necl_aws_urls: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      autoIncrement: false,
+      primaryKey: false,
+      defaultValue: null
     }
 
 

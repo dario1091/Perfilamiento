@@ -56,7 +56,7 @@ async function worker(newClient) {
         /**
          * Validar cedula
          */
-        if (!newClient.file1) {
+        if (newClient.file1) {
 
 
 
@@ -68,7 +68,7 @@ async function worker(newClient) {
 
           // se envia path del archivo y se envia si true si es la parte front del documento
           console.log("Se envia a leer frente del documento");
-          await readDocument(`C:/projects/Avanzo/files/documents/${documentoJson.documentFront}`, true).then(response => {
+          await readDocument(newClient.necl_aws_urls.document.documentFront, true).then(response => {
 
             (async () => {
               /**
@@ -141,7 +141,7 @@ async function worker(newClient) {
 
           // se envia path del archivo y se envia si false si es la parte back del documento
           console.log("Se envia a leer reverso del documento");
-          await readDocument(`C:/projects/Avanzo/files/documents/${documentoJson.documentBack}`, false).then(response => {
+          await readDocument(newClient.necl_aws_urls.document.documentBack, false).then(response => {
             console.log("llega de leer el reverso del documento ");
 
             dataDocument.sexo = response.substring(response.indexOf("ESTATURA"), response.indexOf("ESTATURA") - 3);
@@ -164,7 +164,6 @@ async function worker(newClient) {
                 console.log("Fecha a convertir : " + dateArray[2] + "-" + dateArray[1] + "-" + dateArray[0]);
 
                 let dateCifinFormatDocument = await convertFormatDDMMMYYY(dateArray[2], dateArray[1], dateArray[0]);
-                dateCifinFormatDocument = "06-ENE-1999";
                 dataDocument.cifinExpDate = dateCifinFormatDocument;
                 let expCedula = dataDocument.expedicion.split("-")[1];
 
@@ -232,7 +231,7 @@ async function worker(newClient) {
            */
 
           if (newClient.Company_idCompany == 3) {
-            await readWorkingSupportSalesLand(`C:/projects/Avanzo/files/documents/100201-2/certificado_sales.png`).then(response => {
+            await readWorkingSupportSalesLand(`C:/projects/Avanzo/files/documents/100201-2/certificado_sales.png`, newClient.identificationId).then(response => {
 
               (async () => {
                 if (response)
@@ -260,9 +259,14 @@ async function worker(newClient) {
           dataDocument.paymentData_paymentDate = '';
 
           if (newClient.Company_idCompany == 1) {
-            
-            await readPaymentgSupport(`C:/projects/Avanzo/files/documents/${newClient.file3}`).then(response => {
+
+            await readPaymentgSupport(newClient.necl_aws_urls.workingSupportPng).then(response => {
               console.log("Respuesta en index OK");
+              console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
+
+              console.log(response);
+
+              console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
               if (response) {
                 (async () => {
                   await newClient.update({ necl_json_payment_support: null, necl_approval_processed: false });
@@ -348,12 +352,12 @@ async function worker(newClient) {
 
                 dataDocument.confianzaPaymentSupport = confianza / 6;
                 response.client.name.toUpperCase();
-                let subtotalDevengos = response.client.devengos.subtotal;
-                let subtotalDeducciones = response.client.deducciones.subtotal;
+                let subtotalDevengos = response.totals.devengo;
+                let subtotalDeducciones = response.totals.descuento;
                 let descAvanzo = 0;
-                response.client.deducciones.list.forEach(element => {
-                  if (element.description.toUpperCase().indexOf("Desc Avanzo".toUpperCase()) >= 0) {
-                    descAvanzo = element.valor;
+                response.conceptos.forEach(element => {
+                  if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
+                    descAvanzo = element.descuento;
                   }
                 });
 
@@ -375,7 +379,9 @@ async function worker(newClient) {
             //datos para validar leyendo el comprobando de pago
 
 
-            await readPaymentgSupportSalesLand(`C:/projects/Avanzo/files/documents/${newClient.file3}`).then(response => {
+            // await readPaymentgSupportSalesLand(`C:/projects/Avanzo/files/documents/${newClient.file3}`,newClient.identificationId).then(response => {
+            await readPaymentgSupportSalesLand(newClient.necl_aws_urls.workingSupport, newClient.identificationId).then(response => {
+
               if (response) {
 
                 confianza = 0
@@ -559,7 +565,7 @@ async function getConfiguration() {
   */
           (async () => {
             let newClient = await dbSequelize.newclient.findOne({
-              attributes: ['idNewClient', 'name', 'lastName', 'Company_idCompany', 'identificationId', 'file1', 'file3', 'status', 'necl_cifindata', 'CompanySalaries_idCompanySalaries', [sequelize.fn('min', sequelize.col('idNewClient')), 'idNewClient']],
+              attributes: ['idNewClient', 'name', 'lastName', 'Company_idCompany', 'identificationId', 'file1', 'file3', 'status', 'necl_cifindata', 'CompanySalaries_idCompanySalaries', 'necl_aws_urls', [sequelize.fn('min', sequelize.col('idNewClient')), 'idNewClient']],
               where: { status: 0, necl_approval_processed: false }
             });
 

@@ -358,9 +358,9 @@ const readPaymentgSupport = (filePath) => new Promise((resolve, reject) => {
 
         //leemos la linea de fecha de cracion y cedula
         if (arrayTextLine[posInfActual + 1].arrayText[0].text.split(":").length > 1)
-          jsonCliente.fecha = arrayTextLine[posInfActual + 1].arrayText[0].text.split(":")[1].trim()
+          jsonCliente.client.nomina = arrayTextLine[posInfActual + 1].arrayText[0].text.split(":")[1].trim()
         else
-          jsonCliente.fecha = arrayTextLine[posInfActual + 1].arrayText[0].text.split("Fecha y hora")[1].trim()
+          jsonCliente.client.nomina = arrayTextLine[posInfActual + 1].arrayText[0].text.split("Fecha y hora")[1].trim()
 
         if (arrayTextLine[posInfActual + 1].arrayText[0].text.split(":").length > 1)
           jsonCliente.client.documentNumber = arrayTextLine[posInfActual + 1].arrayText[1].text.split(":")[1].trim()

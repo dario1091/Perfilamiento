@@ -33,10 +33,15 @@ async function writeFile(jsonpath, fileName, inf = {}) {
 
 
 async function documentExtract(imagePath) {
-  var bitmap = fs.readFileSync(imagePath);
-  var bufferImage = new Buffer.from(bitmap);
+
+  //convertimos la imagen en blob para enviar a amazon
+  // var bitmap = fs.readFileSync(imagePath);
+  // var bufferImage = new Buffer.from(bitmap);
+
+
   console.log("llega a metodo para leer imagen de amazon");
   console.log("Archivo a leer: " + imagePath);
+
   return new Promise(resolve => {
     var textract = new AWS.Textract({
       region: "us-east-2",
@@ -44,9 +49,19 @@ async function documentExtract(imagePath) {
       accessKeyId: process.env.ACCESS_KEY_ID,
       secretAccessKey: process.env.SECRET_ACCESS_KEY
     })
+    // var params = {
+    //   Document: {
+    //     Bytes: bufferImage,
+    //   },
+    // }
+
     var params = {
       Document: {
-        Bytes: bufferImage,
+        // Bytes: bufferImage,
+        S3Object: {
+          Bucket: "archivosavanzo",
+          Name: imagePath
+        }
       },
     }
 
@@ -61,13 +76,14 @@ async function documentExtract(imagePath) {
   })
 }
 
-async function convertImage(pdfPath, pass = '') {
+async function convertImage(pdfPath, documentNumber) {
 
   try {
 
 
+    let filePath = path.dirname(pdfPath) + "/" + path.basename(pdfPath).replace(path.extname(pdfPath) + `-${documentNumber}`);
 
-    const { stdout, stderr } = await exec('ls');
+    const { stdout, stderr } = await exec(`pdftoppm -png ${pdfPath} ${filePath} `);
     console.log('stdout:', stdout);
     console.error('stderr:', stderr);
 
@@ -111,10 +127,18 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
       if (ext === '.pdf') {
         try {
           console.log(file);
+
           textract.fromFileWithMimeAndPath("application/pdf", file, config, function (error, text) {
             (error) ? reject(new Error('El archivo no se pudo leer')) : resolve(data)
             return data;
           });
+
+          textract.fromUrl(`https://archivosavanzo.s3.us-east-2.amazonaws.com/${file}`, config, function (error, text) {
+            
+           })
+
+
+
         } catch (error) {
           console.log("###################################");
           console.log(error);

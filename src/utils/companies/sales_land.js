@@ -5,7 +5,7 @@ const { convertImage, documentExtract, writeFile } = require('../utils.js');
 
 
 
-const readWorkingSupportSalesLand = (file) => new Promise((resolve, reject) => {
+const readWorkingSupportSalesLand = (file, documentNumber) => new Promise((resolve, reject) => {
   try {
 
     let ext = path.extname(file);
@@ -190,23 +190,27 @@ const readWorkingSupportSalesLand = (file) => new Promise((resolve, reject) => {
 
 });
 
-const readPaymentgSupportSalesLand = (filePath) => new Promise((resolve, reject) => {
+const readPaymentgSupportSalesLand = (filePath, documentNumber) => new Promise((resolve, reject) => {
 
   try {
+    console.log("llega a sales land a leer desde amazon");
+
 
     let extArray = filePath.split('.');
     let ext = extArray[extArray.length - 1];
 
     if (ext === 'pdf') {
       console.log("Entremos a convertir pdf en imagen");
-      console.log(filePath);
+      //console.log(filePath);
+      //analizar si se debe borrar los meoos de convertir a imagen y la lectura de pdf
+
       (async () => {
-        await convertImage(filePath);
-        filePath = path.dirname(filePath) + "/" + path.basename(filePath).replace(path.extname(filePath), '.png');
+        await convertImage(filePath, documentNumber);
+        filePath = path.dirname(filePath) + "/" + path.basename(filePath).replace(path.extname(filePath) + `-${documentNumber}`, '.png');
 
       })();
     }
-    
+
     let arrayTextLine = [];
     let json = {}
     let confidence = 0.0;
