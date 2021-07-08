@@ -4,6 +4,7 @@ var path = require('path');
 const fs = require('fs');
 const AWS = require('aws-sdk');
 const { writeFile, documentExtract } = require('../utils.js');
+const { convertFormatMMDDYYY } = require('../utils.js');
 
 
 const readWorkingSupport = (file) => new Promise((resolve, reject) => {
@@ -357,10 +358,21 @@ const readPaymentgSupport = (filePath) => new Promise((resolve, reject) => {
         let posDescuentoAvanzo = arrayTextLine.map(function (e) { return e.arrayText[0].text; }).indexOf("3223 AVANZO TINELLO");
 
         //leemos la linea de fecha de cracion y cedula
-        if (arrayTextLine[posInfActual + 1].arrayText[0].text.split(":").length > 1)
+        //se agrega esta condicion porque segun el estado del documento en algunas ocaciones no toma los dos puntos(:)
+        if (arrayTextLine[posInfActual + 1].arrayText[0].text.split(":").length > 1) {
           jsonCliente.client.nomina = arrayTextLine[posInfActual + 1].arrayText[0].text.split(":")[1].trim()
-        else
+        } else {
           jsonCliente.client.nomina = arrayTextLine[posInfActual + 1].arrayText[0].text.split("Fecha y hora")[1].trim()
+        }
+        try {
+          jsonCliente.client.nomina = jsonCliente.client.nomina.split(",")[0] + " " + jsonCliente.client.nomina.split(",")[1].trim()
+          let paymenyDay = jsonCliente.client.nomina.split(" ")[1];
+          let paymenyMonth = jsonCliente.client.nomina.split(" ")[0];
+          let paymenyYear = jsonCliente.client.nomina.split(" ")[2];
+          jsonCliente.client.nomina = await convertFormatMMDDYYY(paymenyYear, paymenyMonth, paymenyDay);
+        } catch (error) {
+          console.log("Error convirtiendo la fecha de pago de emtelco");
+        }
 
         if (arrayTextLine[posInfActual + 1].arrayText[0].text.split(":").length > 1)
           jsonCliente.client.documentNumber = arrayTextLine[posInfActual + 1].arrayText[1].text.split(":")[1].trim()

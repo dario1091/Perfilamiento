@@ -303,21 +303,42 @@ async function worker(newClient) {
                   //condicion de si el comprobante de pago es el actual
                   //companySalaries.companyPaymentNumber
                   //companySalaries.companyPaymentDates
-                  let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[1];
-                  let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[0];
+                  let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[0];
+                  let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[1];
                   let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
 
 
+                  console.log(":::::::::-----------------------------------------------");
+                  console.log("companySalaries : " + companySalaries.companyPaymentNumber);
+                  console.log("companyPaymentDates : " + companySalaries.companyPaymentDates);
+                  console.log("paymenyMonth : " + paymenyMonth);
+                  console.log("paymenyYear  : " + paymenyYear);
+                  console.log("mes  : " + mes);
+                  console.log("anio : " + anio);
+                  console.log("dia : " + dia);
+
+                  console.log(":::::::::-----------------------------------------------");
+
+
                   if (companySalaries.companyPaymentNumber == 1) {
+
                     if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
+                      console.log(">1");
                       if (paymenyMonth == mes && paymenyYear == anio) {
+                        console.log(">1.2");
+
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
+                      console.log(">2");
+
                       if (mes == 1) {
                         anio = parseInt(anio, 10) -= 1;
                       }
+
                       if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                        console.log(">2.2");
+
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else {
@@ -345,7 +366,10 @@ async function worker(newClient) {
                         dataDocument.paymentSupportCorrect = true;
                       }
                     }
-
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                    console.log("paymentDayOne : " + paymentDayOne);
+                    console.log("paymentDayTwo : " + paymentDayTwo);
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                   }
 
                 }
@@ -360,6 +384,12 @@ async function worker(newClient) {
                     descAvanzo = element.descuento;
                   }
                 });
+                console.log("subtotalDevengos : " + subtotalDevengos);
+                console.log("subtotalDeducciones : " + subtotalDeducciones);
+                console.log("descAvanzo : " + descAvanzo);
+                subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+                subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+                descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
                 dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
@@ -472,6 +502,13 @@ async function worker(newClient) {
                   }
                 });
 
+                console.log("subtotalDevengos : " + subtotalDevengos);
+                console.log("subtotalDeducciones : " + subtotalDeducciones);
+                console.log("descAvanzo : " + descAvanzo);
+                subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+                subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+                descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+
                 dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
 
@@ -496,7 +533,17 @@ async function worker(newClient) {
         let newLimit = parseInt(dataDocument.clientCupo, 10);
         if (companySalaries.companyPaymentNumber == 2)
           newLimit *= 2
+
         newLimit = newLimit > 500000 ? 500000 : newLimit;
+
+        console.log(newLimit);
+        console.log(dataDocument.paymentSupportCorrect);
+        console.log(dataDocument.cifinData_equalExpDate);
+        console.log(dataDocument.ccData_contentIdentificationId);
+        console.log(dataDocument.cifinData_containIdentification);
+        console.log(dataDocument.paymentData_contentIdentificationId);
+
+
         if (dataDocument.paymentSupportCorrect &&
           dataDocument.cifinData_equalExpDate &&
           dataDocument.ccData_contentIdentificationId &&

@@ -10,6 +10,33 @@ const util = require('util');
 
 const exec = util.promisify(require('child_process').exec);
 
+const arrayMonthsCC = [{ monthShort: "ENE" },
+{ monthShort: "FEB" },
+{ monthShort: "MAR" },
+{ monthShort: "ABR" },
+{ monthShort: "MAY" },
+{ monthShort: "JUN" },
+{ monthShort: "JUL" },
+{ monthShort: "AGO" },
+{ monthShort: "SEP" },
+{ monthShort: "OCT" },
+{ monthShort: "NOV" },
+{ monthShort: "DIC" }]
+
+const arrayMonthsEmtelco = [{ monthShort: "ENERO", monthNumeric: 1 },
+{ monthShort: "FEBRERO", monthNumeric: 2 },
+{ monthShort: "MARZO", monthNumeric: 3 },
+{ monthShort: "ABRIL", monthNumeric: 4 },
+{ monthShort: "MAYO", monthNumeric: 5 },
+{ monthShort: "JUNIO", monthNumeric: 6 },
+{ monthShort: "JULIO", monthNumeric: 7 },
+{ monthShort: "AGOSTO", monthNumeric: 8 },
+{ monthShort: "SEPTIEMBRE", monthNumeric: 9 },
+{ monthShort: "OCTUBRE", monthNumeric: 10 },
+{ monthShort: "NOVIEMBRE", monthNumeric: 11 },
+{ monthShort: "DICIEMBRE", monthNumeric: 12 }]
+
+
 async function writeFile(jsonpath, fileName, inf = {}) {
   console.log("entramos a generar archivo")
 
@@ -134,8 +161,8 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
           });
 
           textract.fromUrl(`https://archivosavanzo.s3.us-east-2.amazonaws.com/${file}`, config, function (error, text) {
-            
-           })
+
+          })
 
 
 
@@ -231,18 +258,29 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
 });
 
 
-async function convertFormatDDMMMYYY(year, month, day) {
-  console.log("llega a convertir fecha a formato cedula");
-  var opciones = { year: 'numeric', month: 'short', day: 'numeric' };
-  var fecha = new Date(year, (month - 1), day)
-    .toLocaleDateString('es-CO', opciones)
-    .replace(/ /g, '-')
-    .replace('.', '')
-    .replace(/-([a-z])/, function (x) { return '-' + x[1].toUpperCase() });
+// async function convertFormatDDMMMYYY(year, month, day) {
+//   console.log("llega a convertir fecha a formato cedula");
+//   var opciones = { year: 'numeric', month: 'short', day: 'numeric' };
+//   var fecha = new Date(year, (month - 1), day)
+//     .toLocaleDateString('es-CO', opciones)
+//     .replace(/ /g, '-')
+//     .replace('.', '')
+//     .replace(/-([a-z])/, function (x) { return '-' + x[1].toUpperCase() });
 
-  console.log("Fecha formateada: " + fecha);
+//   console.log("Fecha formateada: " + fecha);
+//   return fecha.toUpperCase();
+// }
+async function convertFormatDDMMMYYY(year, month, day) {
+  let fecha = day + "-" + arrayMonthsCC[month - 1].monthShort + "-" + year
+  return fecha.toUpperCase();
+}
+
+async function convertFormatMMDDYYY(year, month, day) {
+  let result = arrayMonthsEmtelco.find(item => item.monthShort == month.toUpperCase());
+
+  let fecha = day + "/" + `${result.monthNumeric}` + "/" + year
   return fecha.toUpperCase();
 }
 
 
-module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY };
+module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY };
