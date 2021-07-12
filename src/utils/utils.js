@@ -65,7 +65,9 @@ async function documentExtract(imagePath) {
   // var bitmap = fs.readFileSync(imagePath);
   // var bufferImage = new Buffer.from(bitmap);
 
-
+  array = imagePath.split(path.sep)
+  console.log(array[array.length - 3] + "/" + array[array.length - 2] + "/" + array[array.length - 1])
+  let fileName = array[array.length - 3] + "/" + array[array.length - 2] + "/" + array[array.length - 1]
   console.log("llega a metodo para leer imagen de amazon");
   console.log("Archivo a leer: " + imagePath);
 
@@ -87,7 +89,7 @@ async function documentExtract(imagePath) {
         // Bytes: bufferImage,
         S3Object: {
           Bucket: "archivosavanzo",
-          Name: imagePath
+          Name: fileName
         }
       },
     }
