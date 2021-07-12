@@ -10,7 +10,7 @@ const request = require('request');
 const { CONFIGURATION } = require('./utils/constants.js');
 const { readWorkingSupport, readPaymentgSupport } = require('./utils/companies/emtelco.js');
 const { readPaymentgSupportSalesLand, readWorkingSupportSalesLand, readDocumentSalesLand } = require('./utils/companies/sales_land');
-const { readDocument, convertFormatDDMMMYYY } = require('./utils/utils.js');
+const { readDocument, convertFormatDDMMMYYY, redondeaAlAlza } = require('./utils/utils.js');
 
 
 
@@ -531,6 +531,10 @@ async function worker(newClient) {
          * vALIDAR LOS JSON GUARDADOS PARA OBTENER EL JSON DE VALIDACION GLOBAL
          */
         let newLimit = parseInt(dataDocument.clientCupo, 10);
+
+
+
+        newLimit = redondeaAlAlza(newLimit, 5000)
         if (companySalaries.companyPaymentNumber == 2)
           newLimit *= 2
 

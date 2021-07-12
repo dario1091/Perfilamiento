@@ -285,4 +285,14 @@ async function convertFormatMMDDYYY(year, month, day) {
 }
 
 
-module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY };
+
+//redondea valores al alza ejemplo 
+// 318034 > 320000
+async function redondeaAlAlza(x, r) {
+  xx = Math.floor(x / r)
+  if (xx != x / r) { xx++ }
+  return (xx * r)
+}
+
+
+module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY,redondeaAlAlza };
