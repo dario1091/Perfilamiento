@@ -532,7 +532,7 @@ async function worker(newClient) {
          */
         let newLimit = parseInt(dataDocument.clientCupo, 10);
         newLimit = await redondeaAlAlza(newLimit, 5000)
-        
+
         if (companySalaries.companyPaymentNumber == 2)
           newLimit *= 2
 
@@ -694,7 +694,8 @@ async function ApproveOrReject(clientId, isApproved, cycleId, rere_array, newLim
         'cycleid': cycleId,
         'approve': isApproved,
         'rere_array': rere_array,
-        'new_limit': newLimit
+        'new_limit': newLimit,
+        'is_approved_profiling': true
       }
     };
 
