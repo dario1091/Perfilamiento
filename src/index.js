@@ -531,10 +531,8 @@ async function worker(newClient) {
          * vALIDAR LOS JSON GUARDADOS PARA OBTENER EL JSON DE VALIDACION GLOBAL
          */
         let newLimit = parseInt(dataDocument.clientCupo, 10);
-
-
-
-        newLimit = redondeaAlAlza(newLimit, 5000)
+        newLimit = await redondeaAlAlza(newLimit, 5000)
+        
         if (companySalaries.companyPaymentNumber == 2)
           newLimit *= 2
 

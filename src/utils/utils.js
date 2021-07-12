@@ -2,8 +2,6 @@ const fs = require('fs');
 const AWS = require('aws-sdk');
 var path = require('path');
 // const pdf = require('pdf-poppler');
-var PDFImage = require("pdf-image").PDFImage;
-var pdf2img = require('pdf2img');
 const dotenv = require("dotenv");
 dotenv.config();
 const util = require('util');
