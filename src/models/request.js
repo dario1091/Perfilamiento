@@ -270,7 +270,29 @@ module.exports = function (sequelize, DataTypes) {
         key: 'idCodes'
       },
       field: 'code_id'
+    },
+    requ_approval_processed: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      autoIncrement: false,
+      primaryKey: false,
+      defaultValue: 0
+    },
+    requ_is_approved_profiling: {
+      type: DataTypes.BOOLEAN,
+      allowNull: true,
+      autoIncrement: false,
+      primaryKey: false,
+      defaultValue: 0
+    },
+    requ_read_result: {
+      type: DataTypes.JSON,
+      allowNull: true,
+      autoIncrement: false,
+      primaryKey: false,
+      defaultValue: null
     }
+
 
 
   },

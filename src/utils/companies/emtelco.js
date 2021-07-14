@@ -160,8 +160,9 @@ const readWorkingSupport = (file) => new Promise((resolve, reject) => {
 });
 
 
-const readPaymentgSupport = (filePath) => new Promise((resolve, reject) => {
+const readPaymentgSupport = (filePath, isRequest = false) => new Promise((resolve, reject) => {
   try {
+     console.log("llega  aleer readPaymenSupport");
     let ext = path.extname(filePath);
     let fileJsonName = path.basename(filePath).replace(ext, 'json');
 
@@ -307,7 +308,7 @@ const readPaymentgSupport = (filePath) => new Promise((resolve, reject) => {
 
       (async () => {
         console.log("entra a la funcion anonima");
-        let jsonToRead = await documentExtract(filePath);
+        let jsonToRead = await documentExtract(filePath, isRequest);
 
         let json = {};
 
@@ -349,7 +350,7 @@ const readPaymentgSupport = (filePath) => new Promise((resolve, reject) => {
         }
 
         json.texts = arrayTextLine
-        // writeFile("", "img_info_" + fileJsonName, json);
+        //  writeFile("", "img_info_" + fileJsonName, json);
 
 
 

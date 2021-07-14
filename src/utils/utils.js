@@ -57,7 +57,7 @@ async function writeFile(jsonpath, fileName, inf = {}) {
 }
 
 
-async function documentExtract(imagePath) {
+async function documentExtract(imagePath, isRequest = false) {
 
   //convertimos la imagen en blob para enviar a amazon
   // var bitmap = fs.readFileSync(imagePath);
@@ -81,13 +81,14 @@ async function documentExtract(imagePath) {
     //     Bytes: bufferImage,
     //   },
     // }
-
+    console.log("------------------------::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+    console.log(isRequest ? imagePath : fileName);
     var params = {
       Document: {
         // Bytes: bufferImage,
         S3Object: {
           Bucket: "archivosavanzo",
-          Name: fileName
+          Name: isRequest ? imagePath : fileName
         }
       },
     }
@@ -293,4 +294,4 @@ async function redondeaAlAlza(x, r) {
 }
 
 
-module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY,redondeaAlAlza };
+module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY, redondeaAlAlza };

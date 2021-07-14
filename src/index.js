@@ -17,7 +17,322 @@ const { readDocument, convertFormatDDMMMYYY, redondeaAlAlza } = require('./utils
 const dbSequelize = require('./config/database_sequelize.js');
 sequelize = dbSequelize.sequelize;
 
+async function leerRequest(request) {
+  console.log("llega a construir array");
+  /**
+        * Se obtiene informacion del cliente para comparar informacion con el archivo que sse sube
+        */
+  let inf = await dbSequelize.user.findOne({
+    attributes: ['idUser', 'name', 'lastName', 'Company_idCompany'],
 
+    include: [{
+      attributes: ['idClient', 'CompanySalaries_idCompanySalaries', 'identificationId'],
+      model: dbSequelize.client, required: true,
+      include: [{
+        attributes: ['idAccount'],
+        model: dbSequelize.account, required: true,
+        where: { 'idAccount': request.Account_idAccount },
+      }],
+    }],
+  });
+
+  /**
+   * se genera objeto cliente para comparacion
+   */
+  let newClient = { name: inf.name, lastName: inf.lastName, identificationId: inf.Client.identificationId }
+
+  /**
+   * se consulta company salaries que tiene el cliente registrados
+   */
+  let companySalaries = await dbSequelize.companysalaries.findOne({
+    attributes: ['companyPaymentDates', 'companyPaymentNumber'],
+    where: { idCompanySalaries: inf.Client.CompanySalaries_idCompanySalaries }
+  });
+
+  /**
+           * Se recore el array de archivos subidos por el cliente
+           * se crea array para guardar datos de lectura de los archivos
+           */
+  let arrayLectura = [];
+
+  for (let index = 0; index < request.requ_jsonfiles.paymentSupportPaths.length; index++) {
+    const element = request.requ_jsonfiles.paymentSupportPaths[index];
+
+    //  request.requ_jsonfiles.paymentSupportPaths.forEach(element => {
+    dataDocument = {};
+    dataDocument.paymentData_contentFirtsName = false;
+    dataDocument.paymentData_contentSecondName = false;
+    dataDocument.paymentData_contentFirtslastName = false;
+    dataDocument.paymentData_contentSecondlastName = false;
+    dataDocument.paymentData_contentIdentificationId = false;
+    dataDocument.paymentSupportCorrect = false;
+    dataDocument.paymentData_paymentDate = '';
+
+    if (request.Company_idCompany == process.env.COMPANY_EMTELCO) {
+
+        await readPaymentgSupport(element.pathPng, true).then(response => {
+          // console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
+          // console.log(response);
+          // console.log(newClient);
+          // console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
+          if (response) {
+
+            confianza = 0
+            if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[0]) >= 0) {
+              dataDocument.paymentData_contentFirtsName = true;
+              confianza += 10;
+            }
+            if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[1]) >= 0) {
+              dataDocument.paymentData_contentSecondName = true;
+              confianza += 10;
+            }
+
+            if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[0]) >= 0) {
+              dataDocument.paymentData_contentFirtslastName = true;
+              confianza += 10;
+            }
+            if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[1]) >= 0) {
+              dataDocument.paymentData_contentSecondlastName = true;
+              confianza += 10;
+            }
+
+
+            if (response.client.documentNumber.replace(/\./g, '').replace(/,/g, '').toUpperCase().indexOf(newClient.identificationId) >= 0) {
+              dataDocument.paymentData_contentIdentificationId = true;
+              confianza += 10;
+            }
+
+            if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
+              dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
+              confianza += 10;
+              //condicion de si el comprobante de pago es el actual
+              //companySalaries.companyPaymentNumber
+              //companySalaries.companyPaymentDates
+              let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[0];
+              let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[1];
+              let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
+
+
+              console.log(":::::::::-----------------------------------------------");
+              console.log("companySalaries : " + companySalaries.companyPaymentNumber);
+              console.log("companyPaymentDates : " + companySalaries.companyPaymentDates);
+              console.log("paymenyMonth : " + paymenyMonth);
+              console.log("paymenyYear  : " + paymenyYear);
+              console.log("mes  : " + mes);
+              console.log("anio : " + anio);
+              console.log("dia : " + dia);
+              console.log(":::::::::-----------------------------------------------");
+
+
+              if (companySalaries.companyPaymentNumber == 1) {
+
+                if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
+                  console.log(">1");
+                  if (paymenyMonth == mes && paymenyYear == anio) {
+                    console.log(">1.2");
+
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+                } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
+                  console.log(">2");
+
+                  if (mes == 1) {
+                    anio = parseInt(anio, 10) -= 1;
+                  }
+
+                  if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                    console.log(">2.2");
+
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+                } else {
+                  dataDocument.paymentSupportCorrect = false;
+                }
+              } else if (companySalaries.companyPaymentNumber == 2) {
+
+
+                if (mes == 1 && dia < 5) {
+                  anio = parseInt(anio, 10) -= 1;
+                }
+                // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
+                let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
+                let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+
+                if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
+
+                  if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+
+
+                } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
+                  if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+                }
+                console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                console.log("paymentDayOne : " + paymentDayOne);
+                console.log("paymentDayTwo : " + paymentDayTwo);
+                console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+              }
+
+            }
+
+            dataDocument.confianzaPaymentSupport = confianza / 6;
+            response.client.name.toUpperCase();
+            let subtotalDevengos = response.totals.devengo;
+            let subtotalDeducciones = response.totals.descuento;
+            let descAvanzo = 0;
+            response.conceptos.forEach(element => {
+              if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
+                descAvanzo = element.descuento;
+              }
+            });
+            console.log("subtotalDevengos : " + subtotalDevengos);
+            console.log("subtotalDeducciones : " + subtotalDeducciones);
+            console.log("descAvanzo : " + descAvanzo);
+            subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+            subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+            descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+
+            dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
+
+
+            arrayLectura.push(dataDocument);
+
+          }
+
+        });
+
+
+
+    }
+
+    if (request.Company_idCompany == process.env.COMPANY_SALESLAND) {
+      //datos para validar leyendo el comprobando de pago
+
+      (async () => {
+        // await readPaymentgSupportSalesLand(`C:/projects/Avanzo/files/documents/${newClient.file3}`,newClient.identificationId).then(response => {
+        await readPaymentgSupportSalesLand(newClient.necl_aws_urls.workingSupport, newClient.identificationId).then(response => {
+
+          if (response) {
+
+            confianza = 0
+            if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[0]) >= 0) {
+              dataDocument.paymentData_contentFirtsName = true;
+              confianza += 10;
+            }
+            if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[1]) >= 0) {
+              dataDocument.paymentData_contentSecondName = true;
+              confianza += 10;
+            }
+            if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[0]) >= 0) {
+              dataDocument.paymentData_contentFirtslastName = true;
+              confianza += 10;
+            }
+            if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[1]) >= 0) {
+              dataDocument.paymentData_contentSecondlastName = true;
+              confianza += 10;
+            }
+
+
+            if (response.client.documentNumber.replace(/\./g, '').replace(/,/g, '').toUpperCase().indexOf(newClient.identificationId) >= 0) {
+              dataDocument.paymentData_contentIdentificationId = true;
+              confianza += 10;
+            }
+
+            if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
+              dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
+              confianza += 10;
+              //condicion de si el comprobante de pago es el actual
+              //companySalaries.companyPaymentNumber
+              //companySalaries.companyPaymentDates
+              let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[1];
+              let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[0];
+              let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
+
+
+              if (companySalaries.companyPaymentNumber == 1) {
+                if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
+                  if (paymenyMonth == mes && paymenyYear == anio) {
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+                } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
+                  if (mes == 1) {
+                    anio = parseInt(anio, 10) -= 1;
+                  }
+                  if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+                } else {
+                  dataDocument.paymentSupportCorrect = false;
+                }
+              } else if (companySalaries.companyPaymentNumber == 2) {
+
+
+                if (mes == 1 && dia < 5) {
+                  anio = parseInt(anio, 10) -= 1;
+                }
+                // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
+                let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
+                let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+
+                if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
+
+                  if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+
+                } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
+                  if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                    dataDocument.paymentSupportCorrect = true;
+                  }
+                }
+
+              }
+
+            }
+
+            dataDocument.confianzaPaymentSupport = confianza / 6;
+            response.client.name.toUpperCase();
+            let subtotalDevengos = response.client.devengos.subtotal;
+            let subtotalDeducciones = response.client.deducciones.subtotal;
+            let descAvanzo = 0;
+            response.client.deducciones.list.forEach(element => {
+              if (element.description.toUpperCase().indexOf("Desc Avanzo".toUpperCase()) >= 0) {
+                descAvanzo = element.valor;
+              }
+            });
+
+            console.log("subtotalDevengos : " + subtotalDevengos);
+            console.log("subtotalDeducciones : " + subtotalDeducciones);
+            console.log("descAvanzo : " + descAvanzo);
+            subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+            subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+            descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+
+            dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
+
+
+
+          }
+          (async () => {
+            console.log("Actualizacion del json global para aprobación");
+
+          })();
+
+
+
+        });
+      })();
+
+
+    }
+
+  };
+  return { status: true, arrayLectura: arrayLectura };
+
+}
 
 async function worker(newClient) {
 
@@ -599,16 +914,103 @@ async function worker(newClient) {
 
 }
 
+async function workerRequest(request) {
+
+  try {
+
+    var hoy = new Date();
+    dia = hoy.getDate();
+    mes = (hoy.getMonth() + 1);
+    anio = hoy.getFullYear();
+
+
+
+    console.log("Request bloqueado:" + request.idRequest);
+    if (request) {
+      try {
+        /**
+         * se actualiza el campo requ_approval_processed para bloquearlo mientras se hace la validacion
+         */
+        await request.update({ requ_approval_processed: true });
+
+
+        /**
+          * Lectura de soporte de pagos
+          * para empresa emtelco y salesland
+          * formatos pdf se leen localmente
+          * formatos opng,jpeg,jpg se envian a aws a leer
+          */
+        if (request.requ_jsonfiles.paymentSupportPaths) {
+          let isLeerRequest = await leerRequest(request);
+
+
+
+          if (isLeerRequest.status && Array.isArray(isLeerRequest.arrayLectura)) {
+            //guardar la informacion en el request
+            console.log("Actualizacion del json global para aprobación");
+            await request.update({ requ_read_result: null });
+            await request.update({ requ_read_result: isLeerRequest.arrayLectura });
+
+            console.log("#########################################################");
+            console.log("Finaliza la lectura Request");
+            console.log("#########################################################");
+
+
+          }
+
+
+
+
+
+
+        }
+
+
+
+
+
+
+
+
+
+
+      } catch (error) {
+        await request.update({ requ_approval_processed: false });
+
+        console.log(error);
+      }
+    }
+
+  } catch (error) {
+    console.log("Ocurrio un error : " + error);
+
+  }
+
+
+
+
+}
+
 async function getConfiguration() {
   try {
+    console.log("__________________________________________________________");
     let configuration = await dbSequelize.configuration.findOne({
       where: {
         conf_id: CONFIGURATION.AUTOMATIC_APPROVAL,
       }
     });
+    let configurationRequest = await dbSequelize.configuration.findOne({
+      where: {
+        conf_id: CONFIGURATION.AUTOMATIC_APPROVAL_REQUEST,
+      }
+    });
+
+    /**
+     * Tarea programada para aprobacion automatica de registro
+     */
     if (configuration) {
       if (configuration.confValue) {
-        cron.schedule("* * * * *", () => {
+        cron.schedule(configuration.confStrValue, () => {
           /**
   * Se listan todos los newcliente que tengan la bandera de aprobacion automatica
   */
@@ -644,7 +1046,51 @@ async function getConfiguration() {
         console.log("Esta desactivado el envio de correo para emrpesas RRHH");
       }
     } else {
-      console.log("No se encontró configuracion para envio de correos RRHH");
+      console.log("No se encontró configuracion para aprobacioón de cliente automatico");
+    }
+
+
+
+
+    /**
+     * Tarea programada para aprobacion automatica de solicitudes de credito
+     */
+    if (configurationRequest) {
+      if (configurationRequest.confValue) {
+        cron.schedule(configurationRequest.confStrValue, () => {
+
+          (async () => {
+            let newRequest = await dbSequelize.request.findOne({
+              attributes: ['idRequest', 'requ_jsonfiles', 'Company_idCompany', 'requ_approval_processed', 'Account_idAccount', [sequelize.fn('min', sequelize.col('idRequest')), 'idRequest']],
+              where: { RequestState_idRequestState: 1, requ_approval_processed: false }
+            });
+            console.log("#####################################################################");
+            console.log("######################### TAREA PROGRAMADA ##########################");
+            console.log("##################Aprobación automatica de solicitudes###############");
+            console.log(new Date().toLocaleString("es-CO", { timeZone: "America/Bogota" }));
+            console.log("#####################################################################");
+            if (newRequest.idRequest) {
+              workerRequest(newRequest);
+            }
+          })();
+
+
+        }, function () {
+          // Código a ejecutar cuando la tarea termina. 
+          // Puedes pasar null para que no haga nada
+          console.log("-------------------------------");
+          console.log("-------------------------------");
+          console.log("-------------------------------");
+          console.log("-TERMINA TAREA PROGRAMA-");
+          console.log("-------------------------------");
+          console.log("-------------------------------");
+          console.log("-------------------------------");
+        }, true);
+      } else {
+        console.log("Esta desactivado el envio de correo para emrpesas RRHH");
+      }
+    } else {
+      console.log("No se encontró configuracion para aprobacioón de cliente automatico");
     }
   } catch (error) {
     console.log("Ocurrio un error*** : " + error);
@@ -695,7 +1141,7 @@ async function ApproveOrReject(clientId, isApproved, cycleId, rere_array, newLim
         'approve': isApproved,
         'rere_array': rere_array,
         'new_limit': newLimit,
-        'is_approved_profiling': true
+        'is_approved_profiling': 'true'
       }
     };
 
