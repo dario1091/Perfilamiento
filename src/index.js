@@ -103,9 +103,10 @@ async function leerRequest(request) {
           }
           let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
           let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+          dataDocument.paymentData_RealPaymentDate =  getPaymentDateEmtelco(response.quincen, paymentDayOne, paymentDayTwo);
+
           if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
             dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
-            dataDocument.paymentData_RealPaymentDate = await getPaymentDateEmtelco(response.quincen, paymentDayOne, paymentDayTwo);
             confianza += 10;
             //condicion de si el comprobante de pago es el actual
             //companySalaries.companyPaymentNumber
