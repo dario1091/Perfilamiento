@@ -663,9 +663,9 @@ async function worker(newClient) {
                   if (companySalaries.companyPaymentNumber == 1) {
 
                     if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
-                      console.log(">1");
+                      console.log(">>>>>>>>>>>>>>>>>>>>>>>>> 1");
                       if (paymenyMonth == mes && paymenyYear == anio) {
-                        console.log(">1.2");
+                        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>><1.2");
 
                         dataDocument.paymentSupportCorrect = true;
                       }
@@ -686,7 +686,11 @@ async function worker(newClient) {
                     }
                   } else if (companySalaries.companyPaymentNumber == 2) {
 
-
+                    console.log("Pago es quincenal");
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                    console.log("paymentDayOne : " + paymentDayOne);
+                    console.log("paymentDayTwo : " + paymentDayTwo);
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     if (mes == 1 && dia < 5) {
                       anio = parseInt(anio, 10) -= 1;
                     }
@@ -695,21 +699,21 @@ async function worker(newClient) {
                     let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
 
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
-
+                      console.log(">>>>>>>> 1");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                        console.log(">>>>>>>> 2");
                         dataDocument.paymentSupportCorrect = true;
                       }
 
 
                     } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
+                      console.log(">>>>>>>> 3");
                       if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                        console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
                     }
-                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-                    console.log("paymentDayOne : " + paymentDayOne);
-                    console.log("paymentDayTwo : " + paymentDayTwo);
-                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+
                   }
 
                 }
