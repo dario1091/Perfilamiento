@@ -465,7 +465,7 @@ const readPaymentgSupport = (filePath, isRequest = false) => new Promise((resolv
         }
 
         if (posNeto > -1) {
-          if (rrayTextLine[posNeto].arrayText[1] == undefined) {
+          if (arrayTextLine[posNeto].arrayText[1] == undefined) {
             total.netoPago = arrayTextLine[posNeto].arrayText[0].text
           } else
             total.netoPago = arrayTextLine[posNeto].arrayText[1].text

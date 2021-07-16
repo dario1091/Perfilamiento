@@ -71,8 +71,8 @@ async function documentExtract(imagePath, isRequest = false) {
 
   return new Promise(resolve => {
     var textract = new AWS.Textract({
-      region: "us-east-2",
-      endpoint: `https://textract.us-east-2.amazonaws.com/`,
+      region: process.env.REGION,
+      endpoint: process.env.TEXT_EXTRACT_URL,
       accessKeyId: process.env.ACCESS_KEY_ID,
       secretAccessKey: process.env.SECRET_ACCESS_KEY
     })
