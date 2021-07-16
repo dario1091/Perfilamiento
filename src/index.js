@@ -10,7 +10,7 @@ const request = require('request');
 const { CONFIGURATION } = require('./utils/constants.js');
 const { readWorkingSupport, readPaymentgSupport } = require('./utils/companies/emtelco.js');
 const { readPaymentgSupportSalesLand, readWorkingSupportSalesLand, readDocumentSalesLand } = require('./utils/companies/sales_land');
-const { readDocument, convertFormatDDMMMYYY, redondeaAlAlza } = require('./utils/utils.js');
+const { readDocument, convertFormatDDMMMYYY, redondeaAlAlza, getPaymentDateEmtelco } = require('./utils/utils.js');
 
 
 
@@ -101,17 +101,18 @@ async function leerRequest(request) {
             dataDocument.paymentData_contentIdentificationId = true;
             confianza += 10;
           }
-
+          let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
+          let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
           if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
             dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
+            dataDocument.paymentData_RealPaymentDate = await getPaymentDateEmtelco(response.quincen, paymentDayOne, paymentDayTwo);
             confianza += 10;
             //condicion de si el comprobante de pago es el actual
             //companySalaries.companyPaymentNumber
             //companySalaries.companyPaymentDates
-            let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[0];
-            let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[1];
-            let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
-
+            let paymenyDay = dataDocument.paymentData_RealPaymentDate.split("/")[0];
+            let paymenyMonth = dataDocument.paymentData_RealPaymentDate.split("/")[1];
+            let paymenyYear = dataDocument.paymentData_RealPaymentDate.split("/")[2];
 
             console.log(":::::::::-----------------------------------------------");
             console.log("companySalaries : " + companySalaries.companyPaymentNumber);
@@ -155,8 +156,6 @@ async function leerRequest(request) {
                 anio = parseInt(anio, 10) -= 1;
               }
               // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
-              let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
-              let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
 
               if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
 
@@ -687,7 +686,7 @@ async function worker(newClient) {
                   } else if (companySalaries.companyPaymentNumber == 2) {
 
                     console.log("Pago es quincenal");
-        
+
                     if (mes == 1 && dia < 5) {
                       anio = parseInt(anio, 10) -= 1;
                     }

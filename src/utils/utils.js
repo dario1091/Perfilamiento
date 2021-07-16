@@ -284,6 +284,36 @@ async function convertFormatMMDDYYY(year, month, day) {
 }
 
 
+async function getPaymentDateEmtelco(text, paymentDayOne, paymentDayTwo) {
+  var arrayText = text.split(" ");
+  console.log(arrayText[0])
+  console.log(arrayText[1])
+  console.log(arrayText[2])
+  console.log(arrayText[3])
+  console.log(arrayText[4])
+  console.log(arrayText[5])
+  console.log(arrayText[6])
+
+  let auxMonth = paymentDayOne == 15 ? 0 : 1;
+
+  let result = arrayMonthsEmtelco.find(item => item.monthShort == arrayText[3].toUpperCase());
+  let month = result.monthNumeric;
+  let dayPay = paymentDayOne;//dia pago uno
+
+  if (arrayText[0].toUpperCase() === "PRIMER") {
+    dayPay = paymentDayOne;//dia pago dos
+  }
+
+  if (arrayText[0].toUpperCase() === "SEGUNDA") {
+    //dia pago dos
+    dayPay = paymentDayTwo
+    month += auxMonth;
+  }
+
+  let fecha = dayPay + "/" + `${month}` + "/" + arrayText[6]
+  return fecha.toUpperCase();
+}
+
 
 //redondea valores al alza ejemplo 
 // 318034 > 320000
@@ -294,4 +324,4 @@ async function redondeaAlAlza(x, r) {
 }
 
 
-module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY, redondeaAlAlza };
+module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY, redondeaAlAlza,getPaymentDateEmtelco };
