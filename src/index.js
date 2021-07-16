@@ -642,7 +642,8 @@ async function worker(newClient) {
                 if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
                   dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
                   dataDocument.paymentData_RealPaymentDate = getPaymentDateEmtelco(response.quincena, paymentDayOne, paymentDayTwo);
-
+                  console.log("Fecha pago calculada :");
+                  console.log(dataDocument.paymentData_RealPaymentDate);
                   confianza += 10;
                   //condicion de si el comprobante de pago es el actual
                   //companySalaries.companyPaymentNumber
