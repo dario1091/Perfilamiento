@@ -183,17 +183,29 @@ async function leerRequest(request) {
           let subtotalDevengos = response.totals.devengo;
           let subtotalDeducciones = response.totals.descuento;
           let descAvanzo = 0;
-          response.conceptos.forEach(element => {
-            if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
-              descAvanzo = element.descuento;
-            }
-          });
+
+
+
+
+
+          if (response.conceptos != undefined) {
+            response.conceptos.forEach(element => {
+              if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
+                descAvanzo = element.descuento;
+              }
+            });
+            if (descAvanzo != 0)
+              descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
+            console.log("descAvanzo : " + descAvanzo);
+
+          }
+
+
+
           console.log("subtotalDevengos : " + subtotalDevengos);
           console.log("subtotalDeducciones : " + subtotalDeducciones);
-          console.log("descAvanzo : " + descAvanzo);
           subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
           subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
-          descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
           dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
@@ -304,12 +316,25 @@ async function leerRequest(request) {
               }
             });
 
+
+
+            if (response.client.deducciones.list != undefined) {
+              response.client.deducciones.list.forEach(element => {
+                if (element.description.toUpperCase().indexOf("Desc Avanzo".toUpperCase()) >= 0) {
+                  descAvanzo = element.valor;
+                }
+              });
+              if (descAvanzo != 0)
+                descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
+              console.log("descAvanzo : " + descAvanzo);
+
+            }
+
+
             console.log("subtotalDevengos : " + subtotalDevengos);
             console.log("subtotalDeducciones : " + subtotalDeducciones);
-            console.log("descAvanzo : " + descAvanzo);
             subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
             subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
-            descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
             dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
@@ -700,15 +725,17 @@ async function worker(newClient) {
                       descAvanzo = element.descuento;
                     }
                   });
+                  if (descAvanzo != 0)
+                    descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+                  console.log("descAvanzo : " + descAvanzo);
+
                 }
 
 
                 console.log("subtotalDevengos : " + subtotalDevengos);
                 console.log("subtotalDeducciones : " + subtotalDeducciones);
-                console.log("descAvanzo : " + descAvanzo);
                 subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
                 subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
-                descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
                 dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
@@ -815,18 +842,24 @@ async function worker(newClient) {
                 let subtotalDevengos = response.client.devengos.subtotal;
                 let subtotalDeducciones = response.client.deducciones.subtotal;
                 let descAvanzo = 0;
-                response.client.deducciones.list.forEach(element => {
-                  if (element.description.toUpperCase().indexOf("Desc Avanzo".toUpperCase()) >= 0) {
-                    descAvanzo = element.valor;
-                  }
-                });
+
+
+                if (response.client.deducciones.list != undefined) {
+                  response.client.deducciones.list.forEach(element => {
+                    if (element.description.toUpperCase().indexOf("Desc Avanzo".toUpperCase()) >= 0) {
+                      descAvanzo = element.valor;
+                    }
+                  });
+                  if (descAvanzo != 0)
+                    descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
+                  console.log("descAvanzo : " + descAvanzo);
+
+                }
 
                 console.log("subtotalDevengos : " + subtotalDevengos);
                 console.log("subtotalDeducciones : " + subtotalDeducciones);
-                console.log("descAvanzo : " + descAvanzo);
                 subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
                 subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
-                descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
                 dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
