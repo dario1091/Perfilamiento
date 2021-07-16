@@ -87,7 +87,7 @@ async function documentExtract(imagePath, isRequest = false) {
       Document: {
         // Bytes: bufferImage,
         S3Object: {
-          Bucket: "archivosavanzo",
+          Bucket: process.env.BUCKET_NAME,
           Name: isRequest ? imagePath : fileName
         }
       },
