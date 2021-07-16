@@ -703,7 +703,7 @@ async function worker(newClient) {
                     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
                       console.log(">>>>>>>> 1");
-                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio && ) {
+                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
                         console.log(">>>>>>>> 2");
                         dataDocument.paymentSupportCorrect = true;
                       }
