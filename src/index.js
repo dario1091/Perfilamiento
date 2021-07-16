@@ -687,17 +687,17 @@ async function worker(newClient) {
                   } else if (companySalaries.companyPaymentNumber == 2) {
 
                     console.log("Pago es quincenal");
-                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-                    console.log("paymentDayOne : " + paymentDayOne);
-                    console.log("paymentDayTwo : " + paymentDayTwo);
-                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+        
                     if (mes == 1 && dia < 5) {
                       anio = parseInt(anio, 10) -= 1;
                     }
                     // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
                     let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
                     let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
-
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+                    console.log("paymentDayOne : " + paymentDayOne);
+                    console.log("paymentDayTwo : " + paymentDayTwo);
+                    console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
                       console.log(">>>>>>>> 1");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
