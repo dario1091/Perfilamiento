@@ -161,7 +161,7 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
             return data;
           });
 
-          textract.fromUrl(`https://archivosavanzo.s3.us-east-2.amazonaws.com/${file}`, config, function (error, text) {
+          textract.fromUrl(`${process.env.S3_URL}/${file}`, config, function (error, text) {
 
           })
 
