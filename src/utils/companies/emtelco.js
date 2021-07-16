@@ -162,7 +162,7 @@ const readWorkingSupport = (file) => new Promise((resolve, reject) => {
 
 const readPaymentgSupport = (filePath, isRequest = false) => new Promise((resolve, reject) => {
   try {
-     console.log("llega  aleer readPaymenSupport");
+    console.log("llega  aleer readPaymenSupport");
     let ext = path.extname(filePath);
     let fileJsonName = path.basename(filePath).replace(ext, 'json');
 
@@ -431,16 +431,20 @@ const readPaymentgSupport = (filePath, isRequest = false) => new Promise((resolv
         //-------------------------------------
 
 
-        concepto = {}
-        concepto.descripcion = arrayTextLine[posDescuentoAvanzo].arrayText[0].text
-        concepto.unidades = arrayTextLine[posDescuentoAvanzo].arrayText[1].text
-        concepto.base = arrayTextLine[posDescuentoAvanzo].arrayText[2].text
-        concepto.devengo = arrayTextLine[posDescuentoAvanzo].arrayText[3].text
-        concepto.descuento = arrayTextLine[posDescuentoAvanzo].arrayText[4].text
+        if (parseInt(posDescuentoAvanzo, 10) >= 0) {
+          concepto = {}
 
-        conceptos = []
-        conceptos.push(concepto)
-        jsonCliente.conceptos = conceptos
+          concepto.descripcion = arrayTextLine[posDescuentoAvanzo].arrayText[0].text
+          concepto.unidades = arrayTextLine[posDescuentoAvanzo].arrayText[1].text
+          concepto.base = arrayTextLine[posDescuentoAvanzo].arrayText[2].text
+          concepto.devengo = arrayTextLine[posDescuentoAvanzo].arrayText[3].text
+          concepto.descuento = arrayTextLine[posDescuentoAvanzo].arrayText[4].text
+
+          conceptos = []
+          conceptos.push(concepto)
+          jsonCliente.conceptos = conceptos
+        }
+
 
 
 
