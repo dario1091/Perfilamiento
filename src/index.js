@@ -103,7 +103,7 @@ async function leerRequest(request) {
           }
           let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
           let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
-          dataDocument.paymentData_RealPaymentDate =  getPaymentDateEmtelco(response.quincen, paymentDayOne, paymentDayTwo);
+          dataDocument.paymentData_RealPaymentDate = getPaymentDateEmtelco(response.quincen, paymentDayOne, paymentDayTwo);
 
           if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
             dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
@@ -708,7 +708,7 @@ async function worker(newClient) {
 
                     } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
                       console.log(">>>>>>>> 3");
-                      if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                      if (paymenyMonth == (parseInt(mes, 10) + 1) && paymenyYear == anio) {
                         console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
