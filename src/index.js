@@ -70,139 +70,139 @@ async function leerRequest(request) {
 
     if (request.Company_idCompany == process.env.COMPANY_EMTELCO) {
 
-        await readPaymentgSupport(element.pathPng, true).then(response => {
-          // console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
-          // console.log(response);
-          // console.log(newClient);
-          // console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
-          if (response) {
+      await readPaymentgSupport(element.pathPng, true).then(response => {
+        // console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
+        // console.log(response);
+        // console.log(newClient);
+        // console.log(":::::::::::::::::::::::::::::::::::::::::::::::::");
+        if (response) {
 
-            confianza = 0
-            if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[0]) >= 0) {
-              dataDocument.paymentData_contentFirtsName = true;
-              confianza += 10;
-            }
-            if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[1]) >= 0) {
-              dataDocument.paymentData_contentSecondName = true;
-              confianza += 10;
-            }
+          confianza = 0
+          if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[0]) >= 0) {
+            dataDocument.paymentData_contentFirtsName = true;
+            confianza += 10;
+          }
+          if (response.client.name.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[1]) >= 0) {
+            dataDocument.paymentData_contentSecondName = true;
+            confianza += 10;
+          }
 
-            if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[0]) >= 0) {
-              dataDocument.paymentData_contentFirtslastName = true;
-              confianza += 10;
-            }
-            if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[1]) >= 0) {
-              dataDocument.paymentData_contentSecondlastName = true;
-              confianza += 10;
-            }
-
-
-            if (response.client.documentNumber.replace(/\./g, '').replace(/,/g, '').toUpperCase().indexOf(newClient.identificationId) >= 0) {
-              dataDocument.paymentData_contentIdentificationId = true;
-              confianza += 10;
-            }
-
-            if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
-              dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
-              confianza += 10;
-              //condicion de si el comprobante de pago es el actual
-              //companySalaries.companyPaymentNumber
-              //companySalaries.companyPaymentDates
-              let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[0];
-              let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[1];
-              let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
+          if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[0]) >= 0) {
+            dataDocument.paymentData_contentFirtslastName = true;
+            confianza += 10;
+          }
+          if (response.client.name.toUpperCase().indexOf(newClient.lastName.toUpperCase().split(" ")[1]) >= 0) {
+            dataDocument.paymentData_contentSecondlastName = true;
+            confianza += 10;
+          }
 
 
-              console.log(":::::::::-----------------------------------------------");
-              console.log("companySalaries : " + companySalaries.companyPaymentNumber);
-              console.log("companyPaymentDates : " + companySalaries.companyPaymentDates);
-              console.log("paymenyMonth : " + paymenyMonth);
-              console.log("paymenyYear  : " + paymenyYear);
-              console.log("mes  : " + mes);
-              console.log("anio : " + anio);
-              console.log("dia : " + dia);
-              console.log(":::::::::-----------------------------------------------");
+          if (response.client.documentNumber.replace(/\./g, '').replace(/,/g, '').toUpperCase().indexOf(newClient.identificationId) >= 0) {
+            dataDocument.paymentData_contentIdentificationId = true;
+            confianza += 10;
+          }
+
+          if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
+            dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
+            confianza += 10;
+            //condicion de si el comprobante de pago es el actual
+            //companySalaries.companyPaymentNumber
+            //companySalaries.companyPaymentDates
+            let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[0];
+            let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[1];
+            let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
 
 
-              if (companySalaries.companyPaymentNumber == 1) {
+            console.log(":::::::::-----------------------------------------------");
+            console.log("companySalaries : " + companySalaries.companyPaymentNumber);
+            console.log("companyPaymentDates : " + companySalaries.companyPaymentDates);
+            console.log("paymenyMonth : " + paymenyMonth);
+            console.log("paymenyYear  : " + paymenyYear);
+            console.log("mes  : " + mes);
+            console.log("anio : " + anio);
+            console.log("dia : " + dia);
+            console.log(":::::::::-----------------------------------------------");
 
-                if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
-                  console.log(">1");
-                  if (paymenyMonth == mes && paymenyYear == anio) {
-                    console.log(">1.2");
 
-                    dataDocument.paymentSupportCorrect = true;
-                  }
-                } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
-                  console.log(">2");
+            if (companySalaries.companyPaymentNumber == 1) {
 
-                  if (mes == 1) {
-                    anio = parseInt(anio, 10) -= 1;
-                  }
+              if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
+                console.log(">1");
+                if (paymenyMonth == mes && paymenyYear == anio) {
+                  console.log(">1.2");
 
-                  if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
-                    console.log(">2.2");
-
-                    dataDocument.paymentSupportCorrect = true;
-                  }
-                } else {
-                  dataDocument.paymentSupportCorrect = false;
+                  dataDocument.paymentSupportCorrect = true;
                 }
-              } else if (companySalaries.companyPaymentNumber == 2) {
+              } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
+                console.log(">2");
 
-
-                if (mes == 1 && dia < 5) {
+                if (mes == 1) {
                   anio = parseInt(anio, 10) -= 1;
                 }
-                // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
-                let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
-                let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
 
-                if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
+                if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                  console.log(">2.2");
 
-                  if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
-                    dataDocument.paymentSupportCorrect = true;
-                  }
-
-
-                } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
-                  if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
-                    dataDocument.paymentSupportCorrect = true;
-                  }
+                  dataDocument.paymentSupportCorrect = true;
                 }
-                console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
-                console.log("paymentDayOne : " + paymentDayOne);
-                console.log("paymentDayTwo : " + paymentDayTwo);
-                console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+              } else {
+                dataDocument.paymentSupportCorrect = false;
               }
+            } else if (companySalaries.companyPaymentNumber == 2) {
 
+
+              if (mes == 1 && dia < 5) {
+                anio = parseInt(anio, 10) -= 1;
+              }
+              // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
+              let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
+              let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+
+              if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
+
+                if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                  dataDocument.paymentSupportCorrect = true;
+                }
+
+
+              } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
+                if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                  dataDocument.paymentSupportCorrect = true;
+                }
+              }
+              console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
+              console.log("paymentDayOne : " + paymentDayOne);
+              console.log("paymentDayTwo : " + paymentDayTwo);
+              console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
             }
-
-            dataDocument.confianzaPaymentSupport = confianza / 6;
-            response.client.name.toUpperCase();
-            let subtotalDevengos = response.totals.devengo;
-            let subtotalDeducciones = response.totals.descuento;
-            let descAvanzo = 0;
-            response.conceptos.forEach(element => {
-              if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
-                descAvanzo = element.descuento;
-              }
-            });
-            console.log("subtotalDevengos : " + subtotalDevengos);
-            console.log("subtotalDeducciones : " + subtotalDeducciones);
-            console.log("descAvanzo : " + descAvanzo);
-            subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
-            subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
-            descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
-
-            dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
-
-
-            arrayLectura.push(dataDocument);
 
           }
 
-        });
+          dataDocument.confianzaPaymentSupport = confianza / 6;
+          response.client.name.toUpperCase();
+          let subtotalDevengos = response.totals.devengo;
+          let subtotalDeducciones = response.totals.descuento;
+          let descAvanzo = 0;
+          response.conceptos.forEach(element => {
+            if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
+              descAvanzo = element.descuento;
+            }
+          });
+          console.log("subtotalDevengos : " + subtotalDevengos);
+          console.log("subtotalDeducciones : " + subtotalDeducciones);
+          console.log("descAvanzo : " + descAvanzo);
+          subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
+          subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
+          descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+
+          dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
+
+
+          arrayLectura.push(dataDocument);
+
+        }
+
+      });
 
 
 
@@ -694,11 +694,15 @@ async function worker(newClient) {
                 let subtotalDevengos = response.totals.devengo;
                 let subtotalDeducciones = response.totals.descuento;
                 let descAvanzo = 0;
-                response.conceptos.forEach(element => {
-                  if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
-                    descAvanzo = element.descuento;
-                  }
-                });
+                if (response.conceptos != undefined) {
+                  response.conceptos.forEach(element => {
+                    if (element.descripcion.toUpperCase().indexOf("AVANZO".toUpperCase()) >= 0) {
+                      descAvanzo = element.descuento;
+                    }
+                  });
+                }
+
+
                 console.log("subtotalDevengos : " + subtotalDevengos);
                 console.log("subtotalDeducciones : " + subtotalDeducciones);
                 console.log("descAvanzo : " + descAvanzo);
