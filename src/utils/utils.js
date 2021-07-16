@@ -284,7 +284,7 @@ async function convertFormatMMDDYYY(year, month, day) {
 }
 
 
-async function getPaymentDateEmtelco(text, paymentDayOne, paymentDayTwo) {
+function getPaymentDateEmtelco(text, paymentDayOne, paymentDayTwo) {
   var arrayText = text.split(" ");
   console.log(arrayText[0])
   console.log(arrayText[1])
@@ -324,4 +324,4 @@ async function redondeaAlAlza(x, r) {
 }
 
 
-module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY, redondeaAlAlza,getPaymentDateEmtelco };
+module.exports = { writeFile, documentExtract, convertImage, readDocument, convertFormatDDMMMYYY, convertFormatMMDDYYY, redondeaAlAlza, getPaymentDateEmtelco };
