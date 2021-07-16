@@ -636,27 +636,31 @@ async function worker(newClient) {
                   dataDocument.paymentData_contentIdentificationId = true;
                   confianza += 10;
                 }
+                let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
+                let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
 
                 if (response.client.nomina.toUpperCase() != undefined && response.client.nomina.toUpperCase() != '') {
                   dataDocument.paymentData_paymentDate = response.client.nomina.toUpperCase();
+                  dataDocument.paymentData_RealPaymentDate = getPaymentDateEmtelco(response.quincena, paymentDayOne, paymentDayTwo);
+
                   confianza += 10;
                   //condicion de si el comprobante de pago es el actual
                   //companySalaries.companyPaymentNumber
                   //companySalaries.companyPaymentDates
-                  let paymenyDay = dataDocument.paymentData_paymentDate.split("/")[0];
-                  let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[1];
-                  let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
+                  let paymenyDay = dataDocument.paymentData_RealPaymentDate.split("/")[0];
+                  let paymenyMonth = dataDocument.paymentData_RealPaymentDate.split("/")[1];
+                  let paymenyYear = dataDocument.paymentData_RealPaymentDate.split("/")[2];
 
 
                   console.log(":::::::::-----------------------------------------------");
                   console.log("companySalaries : " + companySalaries.companyPaymentNumber);
                   console.log("companyPaymentDates : " + companySalaries.companyPaymentDates);
+                  console.log("paymenyDay  : " + paymenyDay);
                   console.log("paymenyMonth : " + paymenyMonth);
                   console.log("paymenyYear  : " + paymenyYear);
                   console.log("mes  : " + mes);
                   console.log("anio : " + anio);
                   console.log("dia : " + dia);
-
                   console.log(":::::::::-----------------------------------------------");
 
 
@@ -692,15 +696,14 @@ async function worker(newClient) {
                       anio = parseInt(anio, 10) -= 1;
                     }
                     // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
-                    let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
-                    let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+
                     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     console.log("paymentDayOne : " + paymentDayOne);
                     console.log("paymentDayTwo : " + paymentDayTwo);
                     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
                       console.log(">>>>>>>> 1");
-                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio && ) {
                         console.log(">>>>>>>> 2");
                         dataDocument.paymentSupportCorrect = true;
                       }
@@ -708,7 +711,7 @@ async function worker(newClient) {
 
                     } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
                       console.log(">>>>>>>> 3");
-                      if (paymenyMonth == (parseInt(mes, 10) + 1) && paymenyYear == anio) {
+                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
                         console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
