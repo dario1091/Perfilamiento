@@ -191,8 +191,8 @@ async function leerRequest(request) {
             console.log("subtotalDevengos : " + subtotalDevengos);
             console.log("subtotalDeducciones : " + subtotalDeducciones);
             console.log("descAvanzo : " + descAvanzo);
-            subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
-            subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+            subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
+            subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10);
             descAvanzo = parseInt(descAvanzo.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
             dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
