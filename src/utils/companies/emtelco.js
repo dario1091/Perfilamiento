@@ -465,7 +465,10 @@ const readPaymentgSupport = (filePath, isRequest = false) => new Promise((resolv
         }
 
         if (posNeto > -1) {
-          total.netoPago = arrayTextLine[posNeto].arrayText[1].text
+          if (rrayTextLine[posNeto].arrayText[1] == undefined) {
+            total.netoPago = arrayTextLine[posNeto].arrayText[0].text
+          } else
+            total.netoPago = arrayTextLine[posNeto].arrayText[1].text
         }
 
         jsonCliente.totals = total;
