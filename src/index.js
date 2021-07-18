@@ -474,7 +474,6 @@ async function worker(newClient) {
 
               dataDocument.confianzaFront = confianza / 10;
 
-              console.log(dataDocument);
               await newClient.update({ necl_json_document: null, necl_approval_processed: true });
               await newClient.update({ necl_json_document: dataDocument, necl_approval_processed: true });
             })();
@@ -933,12 +932,15 @@ async function worker(newClient) {
 
         newLimit = newLimit > 500000 ? 500000 : newLimit;
 
-        console.log(newLimit);
-        console.log(dataDocument.paymentSupportCorrect);
-        console.log(dataDocument.cifinData_equalExpDate);
-        console.log(dataDocument.ccData_contentIdentificationId);
-        console.log(dataDocument.cifinData_containIdentification);
-        console.log(dataDocument.paymentData_contentIdentificationId);
+        console.log(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
+        console.log("Resultados de las validaciones");
+        console.log("newLimit :" + newLimit);
+        console.log("paymentSupportCorrect: " + dataDocument.paymentSupportCorrect);
+        console.log(":cifinData_equalExpDate " + dataDocument.cifinData_equalExpDate);
+        console.log("ccData_contentIdentificationId: " + dataDocument.ccData_contentIdentificationId);
+        console.log("cifinData_containIdentification: " + dataDocument.cifinData_containIdentification);
+        console.log("paymentData_contentIdentificationId: " + dataDocument.paymentData_contentIdentificationId);
+        console.log(":::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
 
 
         if (dataDocument.paymentSupportCorrect &&

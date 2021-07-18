@@ -178,7 +178,6 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
         try {
           (async () => {
             let jsonToRead = await documentExtract(file);
-             console.log(jsonToRead);
             /**
              * sacamos todas las lineas leidas
              */
