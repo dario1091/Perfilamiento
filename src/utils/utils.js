@@ -63,8 +63,9 @@ async function documentExtract(imagePath, isRequest = false) {
   // var bitmap = fs.readFileSync(imagePath);
   // var bufferImage = new Buffer.from(bitmap);
 
-  array = imagePath.split(path.sep)
-  console.log(array[array.length - 3] + "/" + array[array.length - 2] + "/" + array[array.length - 1])
+  array = imagePath.split("/");
+  console.log("Se separa la ruta para obtener el path ");
+  console.log(array);
   let fileName = array[array.length - 3] + "/" + array[array.length - 2] + "/" + array[array.length - 1]
   console.log("llega a metodo para leer imagen de amazon");
   console.log("Archivo a leer: " + imagePath);
@@ -82,7 +83,8 @@ async function documentExtract(imagePath, isRequest = false) {
     //   },
     // }
     console.log("------------------------::::::::::::::::::::::::::::::::::::::::::::::::::::::::");
-    console.log(isRequest ? imagePath : fileName);
+    console.log("imagePath : " + imagePath);
+    console.log("FileName : " + fileName);
     var params = {
       Document: {
         // Bytes: bufferImage,
@@ -176,6 +178,7 @@ const readDocument = (file, isFront = false) => new Promise((resolve, reject) =>
         try {
           (async () => {
             let jsonToRead = await documentExtract(file);
+             console.log(jsonToRead);
             /**
              * sacamos todas las lineas leidas
              */
@@ -286,14 +289,6 @@ async function convertFormatMMDDYYY(year, month, day) {
 
 function getPaymentDateEmtelco(text, paymentDayOne, paymentDayTwo) {
   var arrayText = text.split(" ");
-  console.log(arrayText[0])
-  console.log(arrayText[1])
-  console.log(arrayText[2])
-  console.log(arrayText[3])
-  console.log(arrayText[4])
-  console.log(arrayText[5])
-  console.log(arrayText[6])
-
   let auxMonth = paymentDayOne == 15 ? 0 : 1;
 
   let result = arrayMonthsEmtelco.find(item => item.monthShort == arrayText[3].toUpperCase());

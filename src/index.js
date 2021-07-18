@@ -402,9 +402,8 @@ async function worker(newClient) {
 
           var documentoJson = JSON.parse(newClient.file1);
           var cifinDataJson = JSON.parse(JSON.stringify(newClient.necl_cifindata));
-          console.log("_-_-_-_-_-_-_-_-_-_---_-_---_-");
           // console.log(cifinDataJson);
-          console.log(documentoJson);
+          // console.log(documentoJson);
 
           // se envia path del archivo y se envia si true si es la parte front del documento
           console.log("Se envia a leer frente del documento");
@@ -417,6 +416,10 @@ async function worker(newClient) {
                * apellido
                * numero de cedula
                */
+              console.log("-----------------------------------------------------");
+              console.log("Resultado lectura Frente del document");
+              console.log(response);
+              console.log("-----------------------------------------------------");
 
               let confianza = 0.0
               if (response.toUpperCase().indexOf(newClient.name.toUpperCase().split(" ")[0]) > 0) {
@@ -482,7 +485,10 @@ async function worker(newClient) {
           // se envia path del archivo y se envia si false si es la parte back del documento
           console.log("Se envia a leer reverso del documento");
           await readDocument(newClient.necl_aws_urls.document.documentBack, false).then(response => {
-            console.log("llega de leer el reverso del documento ");
+            console.log("-----------------------------------------------------");
+            console.log("Resultado lectura Reverso del document");
+            console.log(response);
+            console.log("-----------------------------------------------------");
 
             dataDocument.sexo = response.substring(response.indexOf("ESTATURA"), response.indexOf("ESTATURA") - 3);
             dataDocument.expedicion = response.substring(response.indexOf("SEXO") + 4, response.indexOf("SEXO") + 16).trim();
@@ -802,17 +808,33 @@ async function worker(newClient) {
                   let paymenyMonth = dataDocument.paymentData_paymentDate.split("/")[0];
                   let paymenyYear = dataDocument.paymentData_paymentDate.split("/")[2];
 
+                  let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
+                  let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+                  console.log("################################################");
+                  console.log(" Dias de pago ");
+                  console.log("paymentDayOne : " + paymentDayOne);
+                  console.log("paymentDayTwo : " + paymentDayTwo);
+                  console.log("################################################");
 
                   if (companySalaries.companyPaymentNumber == 1) {
+
                     if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
+                      console.log(">>>>>>>>>>>>>>>>>>>>>>>>> 1");
                       if (paymenyMonth == mes && paymenyYear == anio) {
+                        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>><1.2");
+
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
+                      console.log(">2");
+
                       if (mes == 1) {
                         anio = parseInt(anio, 10) -= 1;
                       }
+
                       if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                        console.log(">2.2");
+
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else {
@@ -820,23 +842,31 @@ async function worker(newClient) {
                     }
                   } else if (companySalaries.companyPaymentNumber == 2) {
 
+                    console.log("Pago es quincenal");
 
                     if (mes == 1 && dia < 5) {
                       anio = parseInt(anio, 10) -= 1;
                     }
                     // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
-                    let paymentDayOne = companySalaries.companyPaymentDates.split(",")[0];
-                    let paymentDayTwo = companySalaries.companyPaymentDates.split(",")[1];
+
 
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
-
+                      console.log(">>>>>>>> 1");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                        console.log(">>>>>>>> 2");
                         dataDocument.paymentSupportCorrect = true;
                       }
 
 
                     } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
-                      if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
+                      console.log(">>>>>>>> 3");
+                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
+                        console.log(">>>>>>>> 4");
+                        dataDocument.paymentSupportCorrect = true;
+                      }
+                    } else {
+                      if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio && paymenyDay == paymentDayOne) {
+                        console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
                     }
@@ -865,9 +895,14 @@ async function worker(newClient) {
                 }
 
                 console.log("subtotalDevengos : " + subtotalDevengos);
+                console.log("type of : " + typeof subtotalDevengos);
+
                 console.log("subtotalDeducciones : " + subtotalDeducciones);
-                subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
-                subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+                if (typeof subtotalDevengos != 'number')
+                  subtotalDevengos = parseInt(subtotalDevengos.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
+
+                if (typeof subtotalDeducciones != 'number')
+                  subtotalDeducciones = parseInt(subtotalDeducciones.replace(/\./g, '').replace(/,/g, '').replace(/\$/g, ''), 10)
 
                 dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
