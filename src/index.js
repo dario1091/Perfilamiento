@@ -671,24 +671,15 @@ async function worker(newClient) {
 
 
                   if (companySalaries.companyPaymentNumber == 1) {
-
                     if (parseInt(companySalaries.companyPaymentDates, 10) <= parseInt(dia, 10)) {
-                      console.log(">>>>>>>>>>>>>>>>>>>>>>>>> 1");
                       if (paymenyMonth == mes && paymenyYear == anio) {
-                        console.log(">>>>>>>>>>>>>>>>>>>>>>>>>>><1.2");
-
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else if (parseInt(companySalaries.companyPaymentDates, 10) > parseInt(dia, 10)) {
-                      console.log(">2");
-
                       if (mes == 1) {
                         anio = parseInt(anio, 10) -= 1;
                       }
-
                       if (paymenyMonth == (parseInt(mes, 10) - 1) && paymenyYear == anio) {
-                        console.log(">2.2");
-
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else {
@@ -708,17 +699,13 @@ async function worker(newClient) {
                     console.log("paymentDayTwo : " + paymentDayTwo);
                     console.log("<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<");
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
-                      console.log(">>>>>>>> 1");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
-                        console.log(">>>>>>>> 2");
                         dataDocument.paymentSupportCorrect = true;
                       }
 
 
                     } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
-                      console.log(">>>>>>>> 3");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
-                        console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
                     }
@@ -769,7 +756,7 @@ async function worker(newClient) {
 
 
             // await readPaymentgSupportSalesLand(`C:/projects/Avanzo/files/documents/${newClient.file3}`,newClient.identificationId).then(response => {
-            await readPaymentgSupportSalesLand(newClient.necl_aws_urls.workingSupport, newClient.identificationId).then(response => {
+            await readPaymentgSupportSalesLand(newClient.necl_aws_urls.workingSupportPng, newClient.identificationId).then(response => {
 
               if (response) {
 
@@ -848,24 +835,18 @@ async function worker(newClient) {
                     }
                     // si el pago es quincenal comparamos el dia de hoy con el dia del pago de la empresa de
 
-
                     if (parseInt(paymentDayOne, 10) <= parseInt(dia, 10) && parseInt(paymentDayTwo, 10) < parseInt(dia, 10)) {
-                      console.log(">>>>>>>> 1");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
-                        console.log(">>>>>>>> 2");
                         dataDocument.paymentSupportCorrect = true;
                       }
 
 
                     } else if (parseInt(paymentDayOne, 10) > parseInt(dia, 10)) {
-                      console.log(">>>>>>>> 3");
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio) {
-                        console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
                     } else {
                       if (paymenyMonth == (parseInt(mes, 10)) && paymenyYear == anio && paymenyDay == paymentDayOne) {
-                        console.log(">>>>>>>> 4");
                         dataDocument.paymentSupportCorrect = true;
                       }
                     }
@@ -905,8 +886,14 @@ async function worker(newClient) {
 
                 dataDocument.clientCupo = (subtotalDevengos * 0.5) - (subtotalDeducciones - descAvanzo);
 
-
-
+                if (isNaN(subtotalDevengos) || subtotalDevengos == undefined) {
+                  if (companySalaries.companyPaymentNumber == 1) {
+                    dataDocument.clientCupo = descAvanzo;
+                  }
+                  else {
+                    dataDocument.clientCupo = descAvanzo * 2;
+                  }
+                }
               }
               (async () => {
                 console.log("Actualizacion del json global para aprobación");
